@@ -1,0 +1,39 @@
+name: Lint and Format
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Samples
+        uses: actions/checkout@v4
+        with:
+          path: samples
+
+      - name: Checkout SDK
+        uses: actions/checkout@v4
+        with:
+          repository: Universal-Commerce-Protocol/python-sdk
+          path: sdk/python
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - name: Lint and Format Server
+        working-directory: samples
+        run: |
+          uv run --directory rest/python/server ruff format --check .
+          uv run --directory rest/python/server ruff check .
+
+      - name: Lint and Format Client
+        working-directory: samples
+        run: |
+          uv run --directory rest/python/client/flower_shop ruff format --check .
+          uv run --directory rest/python/client/flower_shop ruff check .
